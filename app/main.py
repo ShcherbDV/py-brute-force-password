@@ -22,20 +22,22 @@ def sha256_hash_str(to_hash: str) -> str:
     return sha256(to_hash.encode("utf-8")).hexdigest()
 
 
-def print_right_password(hashs: list, start: int, end: int) -> None:
+def print_right_password(hashes: set, start: int, end: int) -> None:
     for password in range(start, end):
         password = "{:0=8}".format(password)
-        if sha256_hash_str(password) in hashs:
+        if sha256_hash_str(password) in hashes:
             print(f"Password found: {password}")
 
 
 def brute_force_password() -> None:
     cores = max(1, multiprocessing.cpu_count() - 1)
     futures = []
+    hashes = set(PASSWORDS_TO_BRUTE_FORCE)
     ranges = []
     start = 0
+
     for _ in range(cores):
-        end = start + (100000000 // cores)
+        end = start + (100000000 // cores) + (1 if _ == cores - 1 else 0)
         ranges.append((start, end))
         start = end
 
@@ -43,7 +45,7 @@ def brute_force_password() -> None:
         for start, end in ranges:
             futures.append(
                 executor.submit(
-                    print_right_password, PASSWORDS_TO_BRUTE_FORCE, start, end
+                    print_right_password, hashes, start, end
                 )
             )
 
