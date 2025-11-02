@@ -37,7 +37,7 @@ def brute_force_password() -> None:
     start = 0
 
     for _ in range(cores):
-        end = start + (100000000 // cores) + (1 if _ == cores - 1 else 0)
+        end = start + (100000000 // cores) + (2 if _ == cores - 1 else 0)
         ranges.append((start, end))
         start = end
 
